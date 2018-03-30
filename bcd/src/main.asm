@@ -24,15 +24,17 @@ SECTION "main", ROMX
 
 main::
   nop
+
 .reset
   xor a
   ld [COUNTER], a
 
-; Counts up from 0, in units of 19
+; Count up from 0
 .loop
   ld a, [COUNTER]
   ld b, a
-  ld a, $13 ; 19
+  ld a, %00000101 ; 5
   add a, b
+  daa
   ld [COUNTER], a
   jp .loop
