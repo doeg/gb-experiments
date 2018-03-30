@@ -11,7 +11,7 @@ SOURCES = \
 
 FIX_FLAGS = -v -p 0
 
-INCDIR = include
+INCDIR = inc
 OBJECTS = $(SOURCES:%.asm=%.o)
 
 all: $(ROM_NAME)
