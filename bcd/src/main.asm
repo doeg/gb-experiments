@@ -26,18 +26,30 @@ SECTION "main", ROMX
 
 main::
   nop
+
+.wait_vblank
+  push af
+.vblank_loop
+  ld A, [pLCD_LINE_Y]
+  cp 144
+  jr nz, .vblank_loop
+  pop af
+
+.lcd_off
+  ld HL, pLCD_CTRL
+  res 7, [HL]
 .load_ascii
-  call wait_vblank
-  call lcd_off
   di
   ld bc, ascii
   ld hl, pVRAM_TILES_BACKGROUND
   ld de, ascii_end - ascii
   call memcpy
   ei
-  call lcd_on
+.lcd_on
+  ld HL, pLCD_CTRL
+  set 7, [HL]
 
-.reset
+.reset_counter
   ld hl, COUNTER
   ld b, COUNTER_BYTES
   xor a
@@ -47,11 +59,9 @@ main::
   dec b
   jr nz, .reset_counter_loop
 
-
 .counter_start
   ld c, COUNTER_INCR
   ld hl, COUNTER
-
 ; c - increment for 1s digit
 ; hl - address of 1byte BCD digit pair to increment
 .counter_loop
@@ -89,31 +99,6 @@ memcpy::
   ld a, d
   cp $00
   jr nz, .memcpy_loop
-  ret
-
-lcd_off::
-  ld HL, pLCD_CTRL
-  res 7, [HL]
-  ret
-
-lcd_on::
-  ld HL, pLCD_CTRL
-  set 7, [HL]
-  ret
-
-; Loops until Vblank and then returns.
-;
-; When & why to use this:
-; The vblank interrupt happens every 16.6ms (~60 times/second)
-; and lasts ~1.1ms (10 scanlines). During this period
-; VRAM/OAM may be freely accessed, as the PPU is not using it.
-wait_vblank::
-  push af
-.vblank_loop:
-  ld A, [pLCD_LINE_Y]
-  cp 144
-  jr nz, .vblank_loop
-  pop af
   ret
 
 ascii:
