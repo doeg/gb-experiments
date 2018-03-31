@@ -20,7 +20,7 @@ SECTION  "start", ROM0[$0100]
 SECTION "variables", WRAM0
 COUNTER:: ds 2
 COUNTER_BYTES EQU 2
-COUNTER_INCR EQU %00000101 ; 5
+COUNTER_INCR EQU 1 ; 5
 
 SECTION "main", ROMX
 
@@ -38,11 +38,20 @@ main::
   jr nz, .reset_counter_loop
 
 ; Count up from 0
-.loop
-  ld a, [COUNTER]
+.counter_loop
+  ld hl, COUNTER
+  ld a, [hl]
   ld b, a
   ld a, COUNTER_INCR
   add a, b
   daa
-  ld [COUNTER], a
-  jp .loop
+  ld [hl], a
+  jr nc, .counter_loop_done
+; Increment the 10s place digit by 1
+; FIXME this does NOT account for BCD!
+.counter_loop_next_digit
+  inc l
+  inc [hl]
+.counter_loop_done::
+  nop
+  jr .counter_loop
