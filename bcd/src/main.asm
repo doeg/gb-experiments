@@ -48,10 +48,12 @@ main::
   ld [hl], a
   jr nc, .counter_loop_done
 ; Increment the 10s place digit by 1
-; FIXME this does NOT account for BCD!
 .counter_loop_next_digit
   inc l
-  inc [hl]
+  ld a, [hl]
+  add a, 1
+  daa
+  ld [hl], a
 .counter_loop_done::
   nop
   jr .counter_loop
