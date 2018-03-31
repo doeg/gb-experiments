@@ -18,7 +18,8 @@ SECTION  "start", ROM0[$0100]
   jp main
 
 SECTION "variables", WRAM0
-COUNTER:: ds 1
+COUNTER:: ds 2
+COUNTER_BYTES EQU 2
 
 SECTION "main", ROMX
 
@@ -26,8 +27,14 @@ main::
   nop
 
 .reset
+  ld hl, COUNTER
+  ld b, COUNTER_BYTES
   xor a
-  ld [COUNTER], a
+.reset_counter_loop
+  ld [hl], a
+  inc l
+  dec b
+  jr nz, .reset_counter_loop
 
 ; Count up from 0
 .loop
