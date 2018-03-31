@@ -20,6 +20,7 @@ SECTION  "start", ROM0[$0100]
 SECTION "variables", WRAM0
 COUNTER:: ds 2
 COUNTER_BYTES EQU 2
+COUNTER_INCR EQU %00000101 ; 5
 
 SECTION "main", ROMX
 
@@ -40,7 +41,7 @@ main::
 .loop
   ld a, [COUNTER]
   ld b, a
-  ld a, %00000101 ; 5
+  ld a, COUNTER_INCR
   add a, b
   daa
   ld [COUNTER], a
