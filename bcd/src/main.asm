@@ -20,7 +20,12 @@ SECTION  "start", ROM0[$0100]
 SECTION "variables", WRAM0
 COUNTER:: ds 3
 COUNTER_BYTES EQU 3
-COUNTER_INCR EQU $10 ; 5
+COUNTER_LEN EQU 6
+COUNTER_INCR EQU $01 ; 5
+pCOUNTER_MAP_POS EQU $9988
+
+; Address of "0" tile
+pASCII_TILE_ZERO EQU $81a0
 
 SECTION "main", ROMX
 
@@ -35,6 +40,8 @@ main::
   jr nz, .vblank_loop
   pop af
 
+.disable_interrupts
+  di
 .lcd_off
   ld hl, pLCD_CTRL
   res 7, [hl]
@@ -42,11 +49,11 @@ main::
   ld a, %00000001
   ld [pINTERRUPT_ENABLE], a
 .load_ascii
-  di
   ld bc, ascii
-  ld hl, pVRAM_TILES_BACKGROUND
+  ld hl, pASCII_TILE_ZERO
   ld de, ascii_end - ascii
   call memcpy
+.enable_interrupts
   ei
 .lcd_on
   ld hl, pLCD_CTRL
@@ -105,11 +112,32 @@ memcpy::
   ret
 
 on_vblank::
-  nop
-  nop
-  nop
-  nop
-  nop
+  push af
+  push bc
+  push hl
+
+.draw_lowest_digit
+  xor a
+  ld b, a
+  ld c, a
+
+  ld hl, COUNTER
+  ld a, [hl]
+  and a, $0f
+  add a, $1a
+  ; ld c, a
+
+; .calc_tile_addr
+  ; ld hl, pASCII_TILE_ZERO
+  ; hl now contains the address of the tile to draw
+  ; add hl, bc
+
+  ld hl, $9988
+  ld [hl], a
+
+  pop hl
+  pop bc
+  pop af
   reti
 
 ascii:
