@@ -36,8 +36,8 @@ main::
   pop af
 
 .lcd_off
-  ld HL, pLCD_CTRL
-  res 7, [HL]
+  ld hl, pLCD_CTRL
+  res 7, [hl]
 .load_ascii
   di
   ld bc, ascii
@@ -46,8 +46,8 @@ main::
   call memcpy
   ei
 .lcd_on
-  ld HL, pLCD_CTRL
-  set 7, [HL]
+  ld hl, pLCD_CTRL
+  set 7, [hl]
 
 .reset_counter
   ld hl, COUNTER
