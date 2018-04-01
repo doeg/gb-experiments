@@ -1,7 +1,7 @@
 include "addrs.inc"
 
 SECTION  "Vblank", ROM0[$0040]
-  reti
+  jp on_vblank
 SECTION  "LCDC", ROM0[$0048]
   reti
 SECTION  "Timer_Overflow", ROM0[$0050]
@@ -38,6 +38,9 @@ main::
 .lcd_off
   ld hl, pLCD_CTRL
   res 7, [hl]
+.enable_vblank
+  ld a, %00000001
+  ld [pINTERRUPT_ENABLE], a
 .load_ascii
   di
   ld bc, ascii
@@ -100,6 +103,14 @@ memcpy::
   cp $00
   jr nz, .memcpy_loop
   ret
+
+on_vblank::
+  nop
+  nop
+  nop
+  nop
+  nop
+  reti
 
 ascii:
   db $00, $00, $18, $18, $24, $24, $2c, $2c, $34, $34, $24, $24, $18, $18, $00, $00
