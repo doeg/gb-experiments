@@ -13,9 +13,8 @@ SECTION  "p1thru4", ROM0[$0060]
 
 ; Point-of-entry
 SECTION  "start", ROM0[$0100]
-
   nop
-  jp main
+  jp init
 
 SECTION "variables", WRAM0
 COUNTER:: ds 3
@@ -29,7 +28,7 @@ pASCII_TILE_ZERO EQU $81a0
 
 SECTION "main", ROMX
 
-main::
+init::
   nop
 
 .wait_vblank
@@ -58,7 +57,6 @@ main::
 .lcd_on
   ld hl, pLCD_CTRL
   set 7, [hl]
-
 .reset_counter
   ld hl, COUNTER
   ld b, COUNTER_BYTES
@@ -69,7 +67,7 @@ main::
   dec b
   jr nz, .reset_counter_loop
 
-.counter_start
+.main
   ld c, COUNTER_INCR
   ld hl, COUNTER
 ; c - increment for 1s digit
@@ -87,8 +85,7 @@ main::
   jr .counter_loop
 .counter_loop_done::
   nop
-  ; TODO update screen here
-  jr .counter_start
+  jr .main
 
 
 ; de - block size
