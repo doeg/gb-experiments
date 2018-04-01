@@ -19,12 +19,24 @@ SECTION  "start", ROM0[$0100]
 INCLUDE "header.inc"
 
 SECTION "variables", WRAM0
-pCOUNTER:: ds 3
+
+COUNTER_TIMER EQU 60
 pVBLANK_FLAG:: ds 1
+
+pCOUNTER:: ds 3
+pCOUNTER_TIMER:: ds 1
 
 SECTION "main", ROMX
 init::
   nop
+
+.reset_counter
+  xor a
+  ld [pCOUNTER], a
+
+.init_counter_timer
+  ld a, COUNTER_TIMER
+  ld [pCOUNTER_TIMER], a
 
 .wait_vblank_loop
   ld A, [pLCD_LINE_Y]
@@ -59,15 +71,20 @@ main_loop::
   xor a
   ld [pVBLANK_FLAG], a
 
-  call game_logic
-  jr main_loop
+  ld hl, pCOUNTER_TIMER
+  dec [hl]
+  jr nz, main_loop
 
-game_logic::
-  push hl
+.update_counter
   ld hl, pCOUNTER
   inc [hl]
-  pop hl
-  ret
+
+.reset_counter_timer
+  ld a, COUNTER_TIMER
+  ld [pCOUNTER_TIMER], a
+
+.continue
+  jr main_loop
 
 on_vblank::
   push af
@@ -76,5 +93,5 @@ on_vblank::
   ; And set the vblank flag
   ld a, 1
   ld [pVBLANK_FLAG], a
-  pop af 
+  pop af
   reti
