@@ -22,7 +22,7 @@ COUNTER_BYTES EQU 3
 COUNTER_LEN EQU 6
 COUNTER_INCR EQU $01 ; 5
 COUNTER_TIMER EQU 60
-pCOUNTER_MAP_POS EQU $9988
+pCOUNTER_MAP_POS EQU $998C
 pVBLANK_FLAG:: ds 1
 pCOUNTER_TIMER:: ds 1
 
@@ -166,7 +166,7 @@ on_vblank::
   and a, $0f
   add a, $1a
 
-  ld hl, $9988
+  ld hl, pCOUNTER_MAP_POS
   ld [hl], a
 
 .set_vblank_flag
