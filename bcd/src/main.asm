@@ -154,6 +154,7 @@ memcpy::
 on_vblank::
   push af
   push bc
+  push de
   push hl
 .draw_loop_init
   ; bc tracks our position in the COUNTER's bytes. If the number we're drawing
@@ -163,13 +164,16 @@ on_vblank::
   ;   c000   c001   c002   c003   c004
   ;
   ; In this case, COUNTER_BYTES is 5 since the number is 5 bytes (10 digits).
-  ;
-  ; On the screen we draw it "backwards", right to left, one digit at a time:
-  ;
-  ; |  9  |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
-  ;  9986  9987  9988  9989  998A  998B  998C  998D  998E  008F
-  ;
   ld bc, $00
+  ; de tracks our position on the screen (in the background map address space)
+  ; as the offset from the leftmost address. On the screen we draw "backwards",
+  ; right to left, one digit at a time:
+  ;
+  ; de val:     0     1     2     3     4     5     6     7     8     9
+  ; digit:     |  9  |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
+  ; address:    9986  9987  9988  9989  998A  998B  998C  998D  998E  008F
+  ; direction:  <-----<-----<-----<-----<-----<-----<-----<-----<-----START
+  ld de, COUNTER_LEN
 
 .draw_loop
   nop
@@ -179,21 +183,27 @@ on_vblank::
   and a, %00001111
   add a, $1a
   ld hl, pCOUNTER_MAP_POS
+  add hl, de 
   ld [hl], a
 .draw_hi_digit
+  dec e
   ld hl, pCOUNTER
   ld a, [hl]
   swap a
   and a, %00001111
   add a, $1a
   ld hl, pCOUNTER_MAP_POS
-  dec l
+  add hl, de
   ld [hl], a
 .draw_loop_continue
   inc bc
   ld a, c
   cp COUNTER_BYTES
-  jr nz, .draw_loop
+  jr z, .draw_loop_done
+  dec e
+  jr .draw_loop
+.draw_loop_done
+  nop
 
 .set_vblank_flag
   ld a, 1
@@ -201,6 +211,7 @@ on_vblank::
 
 .continue
   pop hl
+  pop de
   pop bc
   pop af
   reti
