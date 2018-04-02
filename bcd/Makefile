@@ -3,7 +3,7 @@ LINK = rgblink
 FIX = rgbfix
 
 #Change the following lines
-ROM_NAME = template
+ROM_NAME = bcd-demo
 
 SOURCES = \
 	$(wildcard src/*.asm) \
