@@ -17,7 +17,7 @@ SECTION  "start", ROM0[$0100]
   jp init
 
 SECTION "variables", WRAM0
-COUNTER:: ds 3
+pCOUNTER:: ds 3
 COUNTER_BYTES EQU 3
 COUNTER_LEN EQU 6
 COUNTER_INCR EQU $01 ; 5
@@ -62,7 +62,7 @@ init::
   set 7, [hl]
 
 .reset_counter
-  ld hl, COUNTER
+  ld hl, pCOUNTER
   ld b, COUNTER_BYTES
   xor a
 .reset_counter_loop
@@ -109,7 +109,7 @@ inc_counter::
   push hl
 
   ld c, COUNTER_INCR
-  ld hl, COUNTER
+  ld hl, pCOUNTER
 ; c - increment for 1s digit
 ; hl - address of 1byte BCD digit pair to increment
 .counter_loop
@@ -156,7 +156,7 @@ on_vblank::
   push hl
 
 .draw_lo_digit
-  ld hl, COUNTER
+  ld hl, pCOUNTER
   ld a, [hl]
   and a, %00001111
   add a, $1a
@@ -165,14 +165,14 @@ on_vblank::
   ld [hl], a
 
 .draw_hi_digit
-  ld hl, COUNTER
+  ld hl, pCOUNTER
   ld a, [hl]
   swap a
   and a, %00001111
   add a, $1a
 
   ld hl, pCOUNTER_MAP_POS
-  dec l 
+  dec l
   ld [hl], a
 
 .set_vblank_flag
