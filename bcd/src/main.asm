@@ -41,13 +41,10 @@ SECTION "main", ROMX
 init::
   nop
 
-.wait_vblank
-  push af
-.vblank_loop
+.wait_vblank_loop
   ld A, [pLCD_LINE_Y]
   cp 144
-  jr nz, .vblank_loop
-  pop af
+  jr nz, .wait_vblank_loop
 
 .disable_interrupts
   di
@@ -82,7 +79,7 @@ init::
   ld a, COUNTER_TIMER
   ld [pCOUNTER_TIMER], a
 
-main::
+.main_loop
   halt
   nop
 
@@ -107,8 +104,10 @@ main::
   ld [pCOUNTER_TIMER], a
 
 .continue
-  jr main
+  jr .main_loop
 
+; Increments the value of the counter (in memory) by COUNTER_INCR,
+; adjusting for BCD.
 inc_counter::
   push af
   push bc
@@ -137,7 +136,6 @@ inc_counter::
   pop af
   ret
 
-
 ; de - block size
 ; bc - source address
 ; hl - destination address
@@ -158,6 +156,8 @@ memcpy::
   jr nz, .memcpy_loop
   ret
 
+; V-blank interrupt handler. Draws the digits of the counter's current value
+; to the screen (as background tiles). 
 on_vblank::
   push af
   push bc
