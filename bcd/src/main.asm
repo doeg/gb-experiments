@@ -156,7 +156,21 @@ on_vblank::
   push bc
   push hl
 .draw_loop_init
+  ; bc tracks our position in the COUNTER's bytes. If the number we're drawing
+  ; is "9876543210", then the value of pCOUNTER ($c000) is:
+  ;
+  ;  |  10  |  32  |  54  |  76  |  98  |
+  ;   c000   c001   c002   c003   c004
+  ;
+  ; In this case, COUNTER_BYTES is 5 since the number is 5 bytes (10 digits).
+  ;
+  ; On the screen we draw it "backwards", right to left, one digit at a time:
+  ;
+  ; |  9  |  8  |  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
+  ;  9986  9987  9988  9989  998A  998B  998C  998D  998E  008F
+  ;
   ld bc, $00
+
 .draw_loop
   nop
 .draw_lo_digit
@@ -164,17 +178,14 @@ on_vblank::
   ld a, [hl]
   and a, %00001111
   add a, $1a
-
   ld hl, pCOUNTER_MAP_POS
   ld [hl], a
-
 .draw_hi_digit
   ld hl, pCOUNTER
   ld a, [hl]
   swap a
   and a, %00001111
   add a, $1a
-
   ld hl, pCOUNTER_MAP_POS
   dec l
   ld [hl], a
@@ -183,6 +194,7 @@ on_vblank::
   ld a, c
   cp COUNTER_BYTES
   jr nz, .draw_loop
+
 .set_vblank_flag
   ld a, 1
   ld [pVBLANK_FLAG], a
