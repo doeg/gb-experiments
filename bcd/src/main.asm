@@ -153,8 +153,12 @@ memcpy::
 
 on_vblank::
   push af
+  push bc
   push hl
-
+.draw_loop_init
+  ld bc, $00
+.draw_loop
+  nop
 .draw_lo_digit
   ld hl, pCOUNTER
   ld a, [hl]
@@ -174,13 +178,18 @@ on_vblank::
   ld hl, pCOUNTER_MAP_POS
   dec l
   ld [hl], a
-
+.draw_loop_continue
+  inc bc
+  ld a, c
+  cp COUNTER_BYTES
+  jr nz, .draw_loop
 .set_vblank_flag
   ld a, 1
   ld [pVBLANK_FLAG], a
 
 .continue
   pop hl
+  pop bc
   pop af
   reti
 
