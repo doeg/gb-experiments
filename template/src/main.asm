@@ -88,7 +88,7 @@ main_loop::
 
 on_vblank::
   push af
-  ; Draw stuff...
+  ; Draw stuff... a DMA transfer would happen here
   nop
   ; And set the vblank flag
   ld a, 1
