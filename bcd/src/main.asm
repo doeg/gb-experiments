@@ -21,7 +21,7 @@ pCOUNTER:: ds 3
 COUNTER_BYTES EQU 3
 COUNTER_LEN EQU 6
 COUNTER_INCR EQU $01 ; 5
-COUNTER_TIMER EQU 60
+COUNTER_TIMER EQU 1
 pCOUNTER_MAP_POS EQU $998C
 pVBLANK_FLAG:: ds 1
 pCOUNTER_TIMER:: ds 1
@@ -179,15 +179,17 @@ on_vblank::
   nop
 .draw_lo_digit
   ld hl, pCOUNTER
+  add hl, bc
   ld a, [hl]
   and a, %00001111
   add a, $1a
   ld hl, pCOUNTER_MAP_POS
-  add hl, de 
+  add hl, de
   ld [hl], a
 .draw_hi_digit
   dec e
   ld hl, pCOUNTER
+  add hl, bc
   ld a, [hl]
   swap a
   and a, %00001111
