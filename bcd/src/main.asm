@@ -153,17 +153,12 @@ memcpy::
 
 on_vblank::
   push af
-  push bc
   push hl
 
-.draw_lowest_digit
-  xor a
-  ld b, a
-  ld c, a
-
+.draw_lo_digit
   ld hl, COUNTER
   ld a, [hl]
-  and a, $0f
+  and a, %00001111
   add a, $1a
 
   ld hl, pCOUNTER_MAP_POS
@@ -173,8 +168,8 @@ on_vblank::
   ld a, 1
   ld [pVBLANK_FLAG], a
 
+.continue
   pop hl
-  pop bc
   pop af
   reti
 
