@@ -22,6 +22,7 @@ COUNTER_BYTES EQU 3
 COUNTER_LEN EQU 6
 COUNTER_INCR EQU $01 ; 5
 pCOUNTER_MAP_POS EQU $9988
+pVBLANK_FLAG:: ds 1
 
 ; Address of "0" tile
 pASCII_TILE_ZERO EQU $81a0
@@ -67,7 +68,17 @@ init::
   dec b
   jr nz, .reset_counter_loop
 
-.main
+main::
+  call inc_counter
+  jp main
+
+
+inc_counter::
+  push af
+  push bc
+  push de
+  push hl
+
   ld c, COUNTER_INCR
   ld hl, COUNTER
 ; c - increment for 1s digit
@@ -83,9 +94,12 @@ init::
   inc l
   ld c, 1
   jr .counter_loop
-.counter_loop_done::
-  nop
-  jr .main
+.counter_loop_done
+  pop hl
+  pop de
+  pop bc
+  pop af
+  ret
 
 
 ; de - block size
@@ -122,12 +136,6 @@ on_vblank::
   ld a, [hl]
   and a, $0f
   add a, $1a
-  ; ld c, a
-
-; .calc_tile_addr
-  ; ld hl, pASCII_TILE_ZERO
-  ; hl now contains the address of the tile to draw
-  ; add hl, bc
 
   ld hl, $9988
   ld [hl], a
