@@ -164,6 +164,17 @@ on_vblank::
   ld hl, pCOUNTER_MAP_POS
   ld [hl], a
 
+.draw_hi_digit
+  ld hl, COUNTER
+  ld a, [hl]
+  swap a
+  and a, %00001111
+  add a, $1a
+
+  ld hl, pCOUNTER_MAP_POS
+  dec l 
+  ld [hl], a
+
 .set_vblank_flag
   ld a, 1
   ld [pVBLANK_FLAG], a
