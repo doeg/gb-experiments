@@ -1,5 +1,3 @@
-include "addrs.inc"
-
 SECTION  "Vblank", ROM0[$0040]
   jp on_vblank
 SECTION  "LCDC", ROM0[$0048]
@@ -17,17 +15,26 @@ SECTION  "start", ROM0[$0100]
   jp init
 
 SECTION "variables", WRAM0
-pCOUNTER:: ds 5
+; Constants
 COUNTER_BYTES EQU 5
 COUNTER_LEN EQU COUNTER_BYTES * 2
 COUNTER_INCR EQU 1 ; 5
 COUNTER_TIMER EQU 60
-pCOUNTER_MAP_POS EQU $9984
+
+; Variables
+pCOUNTER:: ds 5
 pVBLANK_FLAG:: ds 1
 pCOUNTER_TIMER:: ds 1
 
 ; Address of "0" tile
-pASCII_TILE_ZERO EQU $81a0
+pASCII_TILE_ZERO         EQU $81a0
+; BG map address of leftmost digit
+pCOUNTER_MAP_POS         EQU $9984
+
+; Game Boy addresses
+pLCD_CTRL                EQU $ff40
+pLCD_LINE_Y              EQU $ff44
+pINTERRUPT_ENABLE        EQU $ffff
 
 SECTION "main", ROMX
 
