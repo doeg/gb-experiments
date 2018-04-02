@@ -21,8 +21,10 @@ COUNTER:: ds 3
 COUNTER_BYTES EQU 3
 COUNTER_LEN EQU 6
 COUNTER_INCR EQU $01 ; 5
+COUNTER_TIMER EQU 60
 pCOUNTER_MAP_POS EQU $9988
 pVBLANK_FLAG:: ds 1
+pCOUNTER_TIMER:: ds 1
 
 ; Address of "0" tile
 pASCII_TILE_ZERO EQU $81a0
@@ -58,6 +60,7 @@ init::
 .lcd_on
   ld hl, pLCD_CTRL
   set 7, [hl]
+
 .reset_counter
   ld hl, COUNTER
   ld b, COUNTER_BYTES
@@ -68,10 +71,36 @@ init::
   dec b
   jr nz, .reset_counter_loop
 
-main::
-  call inc_counter
-  jp main
+.init_counter_timer
+  ld a, COUNTER_TIMER
+  ld [pCOUNTER_TIMER], a
 
+main::
+  halt
+  nop
+
+.check_vblank_flag
+  ld a, [pVBLANK_FLAG]
+  or a
+  jr z, main
+
+.clear_vblank_flag
+  xor a
+  ld [pVBLANK_FLAG], a
+
+.dec_counter_timer
+  ld hl, pCOUNTER_TIMER
+  dec [hl]
+  jr nz, .continue
+
+  call inc_counter
+
+.reset_counter_timer
+  ld a, COUNTER_TIMER
+  ld [pCOUNTER_TIMER], a
+
+.continue
+  jr main
 
 inc_counter::
   push af
@@ -139,6 +168,10 @@ on_vblank::
 
   ld hl, $9988
   ld [hl], a
+
+.set_vblank_flag
+  ld a, 1
+  ld [pVBLANK_FLAG], a
 
   pop hl
   pop bc
