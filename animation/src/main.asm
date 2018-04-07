@@ -20,11 +20,7 @@ INCLUDE "header.inc"
 
 SECTION "variables", WRAM0
 
-COUNTER_TIMER EQU 60
 pVBLANK_FLAG:: ds 1
-
-pCOUNTER:: ds 3
-pCOUNTER_TIMER:: ds 1
 
 ; Each individual tile is 16 bytes
 TILE_SIZE_BYTES EQU 16
@@ -37,14 +33,6 @@ pGENGAR_TILES EQU $81a0
 SECTION "main", ROMX
 init::
   nop
-
-.reset_counter
-  xor a
-  ld [pCOUNTER], a
-
-.init_counter_timer
-  ld a, COUNTER_TIMER
-  ld [pCOUNTER_TIMER], a
 
 .wait_vblank_loop
   ld A, [pLCD_LINE_Y]
@@ -85,18 +73,8 @@ main_loop::
   xor a
   ld [pVBLANK_FLAG], a
 
-  ld hl, pCOUNTER_TIMER
-  dec [hl]
-  jr nz, main_loop
-
-.update_counter
-  ld hl, pCOUNTER
-  inc [hl]
-
-.reset_counter_timer
-  ld a, COUNTER_TIMER
-  ld [pCOUNTER_TIMER], a
-
+  ; Do stuff here
+  
 .continue
   jr main_loop
 
