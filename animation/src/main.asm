@@ -1,7 +1,7 @@
 include "addrs.inc"
 
 SECTION  "Vblank", ROM0[$0040]
-  jp on_vblank
+  jp pHRAM
 SECTION  "LCDC", ROM0[$0048]
   reti
 SECTION  "Timer_Overflow", ROM0[$0050]
@@ -48,6 +48,13 @@ init::
   ld a, %00000001
   ld [pINTERRUPT_ENABLE], a
 
+; Copies the DMA handler code to HRAM
+.init_dma::
+  ld de, on_vblank_end - on_vblank + 1
+  ld bc, on_vblank
+  ld hl, pHRAM
+  call memcpy
+
 .load_tiles
   ld bc, gengar ; source
   ld hl, pGENGAR_TILES  ; dest
@@ -62,31 +69,41 @@ init::
 main_loop::
   halt
   nop
-
   ; Vblank interrupt?
   ld a, [pVBLANK_FLAG]
   or a
   ; No, some other interrupt
   jr z, main_loop
-
   ; Clear the vblank flag
   xor a
   ld [pVBLANK_FLAG], a
-
   ; Do stuff here
-  
 .continue
   jr main_loop
 
+; V-blank interrupt handler code. This is not jumped to directly.
+; Rather, it is copied to HRAM by the `.init_dma` block. Sets
+; the pVBLANK_FLAG to one to indicate that the main loop should run
+; (giving a main loop frequency of ~60 times/second).
 on_vblank::
   push af
-  ; Draw stuff... a DMA transfer would happen here
-  nop
-  ; And set the vblank flag
+.set_vblank_flag
   ld a, 1
   ld [pVBLANK_FLAG], a
+.invoke_dma
+  ; Division by 100 since we're in HRAM, and all addresses for ldh are
+  ; relative to $FF00
+  ld a, pSHADOW_OAM / $100
+  ldh [pOAM_DMA_TRANS], a
+  ; Delay for 28 (5 x 50) cycles (~200ms)
+  ld a, $28
+.dma_wait
+  dec a
+  jr nz, .dma_wait
+.dma_wait_done
   pop af
   reti
+on_vblank_end::
 
 ; de - block size
 ; bc - source address
