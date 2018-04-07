@@ -26,6 +26,12 @@ pVBLANK_FLAG:: ds 1
 pCOUNTER:: ds 3
 pCOUNTER_TIMER:: ds 1
 
+; Each individual tile is 16 bytes
+TILE_SIZE_BYTES EQU 16
+
+; Each sprite is composed of 4 tiles
+SPRITE_SIZE_BYTES EQU TILE_SIZE_BYTES * 4
+
 SECTION "main", ROMX
 init::
   nop
@@ -95,3 +101,15 @@ on_vblank::
   ld [pVBLANK_FLAG], a
   pop af
   reti
+
+gengar_0::
+  db $00, $00, $00, $00, $00, $00, $00, $00, $32, $32, $3f, $3f, $3f, $3f, $1f, $1b
+  db $00, $00, $00, $00, $00, $00, $00, $00, $4c, $4c, $fc, $fc, $fc, $fc, $f8, $d8
+  db $3f, $39, $3f, $3f, $7d, $72, $7d, $7a, $3d, $3e, $1f, $1f, $1f, $1f, $0c, $0c
+  db $fc, $9c, $fc, $fc, $be, $4e, $be, $5e, $bc, $7c, $f8, $f8, $f8, $f8, $30, $30
+
+gengar_1::
+  db $00, $00, $00, $00, $00, $00, $00, $00, $04, $04, $3f, $3f, $3f, $3f, $1f, $1f
+  db $00, $00, $00, $00, $00, $00, $00, $00, $20, $20, $fc, $fc, $fc, $fc, $f8, $f8
+  db $3f, $3b, $3f, $39, $3f, $3f, $7d, $7a, $7d, $7e, $3f, $3f, $1f, $1f, $0f, $0f
+  db $fc, $dc, $fc, $9c, $fc, $fc, $be, $5e, $be, $7e, $fc, $fc, $f8, $f8, $f0, $f0
