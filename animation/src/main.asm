@@ -76,6 +76,14 @@ init::
   ld hl, pHRAM
   call memcpy
 
+.set_palettes
+  ld hl, pLCD_BG_PAL
+  LD [hl], %00011011
+  ld hl, pOBJ0_PAL
+  ld [hl], %00011011
+  ld hl, pOBJ1_PAL
+  ld [hl], %00011011
+
 .load_tiles
   ld bc, gengar ; source
   ld hl, pGENGAR_TILES  ; dest
