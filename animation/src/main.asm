@@ -33,7 +33,7 @@ GENGAR_Y_DEFAULT EQU $46
 pGENGAR_CURRENT_FRAME:: ds 1
 
 pGENGAR_FRAME_COUNTER:: ds 1
-GENGAR_FRAME_RATE EQU 10
+GENGAR_FRAME_RATE EQU 15
 
 SECTION  "Vblank", ROM0[$0040]
   jp pHRAM
@@ -116,7 +116,7 @@ init::
   ld [hl], GENGAR_Y_DEFAULT
 
   xor a
-  ld [pGENGAR_STATE], a
+  ld [pGENGAR_CURRENT_FRAME], a
 
   ld a, GENGAR_FRAME_RATE
   ld [pGENGAR_FRAME_COUNTER], a
@@ -165,13 +165,23 @@ draw_gengar_0::
   dec [hl]
   jr nz, .done
 
+  ld a, GENGAR_FRAME_RATE
+  ld [pGENGAR_FRAME_COUNTER], a
+
+.load_current_frame
+  ld d, $1a
+  ld a, [pGENGAR_CURRENT_FRAME]
+  add a, d
+  ld d, a
+  ld a, [pGENGAR_CURRENT_FRAME]
+  cpl
+  ld [pGENGAR_CURRENT_FRAME], a
+
 .load_position
   ld hl, pGENGAR_Y
   ld b, [hl]
   ld hl, pGENGAR_X
   ld c, [hl]
-
-  ld d, $1a
 
 .top_left
   ld hl, pSHADOW_OAM
