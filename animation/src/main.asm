@@ -124,7 +124,7 @@ init::
 .load_tiles
   ld bc, gengar ; source
   ld hl, pGENGAR_TILES  ; dest
-  ld de, SPRITE_SIZE_BYTES * 2   ; size
+  ld de, SPRITE_SIZE_BYTES * 2  + 1  ; size
   call memcpy
 
 .screen_on
