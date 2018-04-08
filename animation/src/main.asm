@@ -58,6 +58,14 @@ init::
   ld a, %00000001
   ld [pINTERRUPT_ENABLE], a
 
+.clear_hram
+  ; Clear HRAM. -2 to save room for the stack,
+  ; and because the range is inclusive.
+  xor a
+  ld hl, pHRAM
+  ld bc, pHRAM_END - pHRAM - 2
+  call mem_set
+
 .clear_oam::
   xor a
   ld hl, $FE00 ; start of OAM
