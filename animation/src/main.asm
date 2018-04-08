@@ -153,6 +153,7 @@ draw_gengar_0::
   ; a - accumulator
   ; b - gengar y-pos
   ; c - gengar x-pos
+  ; d - tile index
   ; e - dunno but it's used
   push af
   push bc
@@ -170,13 +171,16 @@ draw_gengar_0::
   ld hl, pGENGAR_X
   ld c, [hl]
 
+  ld d, $1a
+
 .top_left
   ld hl, pSHADOW_OAM
   ld [hl], b
   inc l
   ld [hl], c
   inc l
-  ld [hl], $1a; tile number
+  ld [hl], d; tile number
+  inc d
 
 .top_right
   ld hl, pSHADOW_OAM + $04
@@ -184,30 +188,32 @@ draw_gengar_0::
   ld a, c
   adc a, 8
   ld c, a
-  ld [hl], b
+  ld [hl], b ; y-pos
   inc l
-  ld [hl], c
+  ld [hl], c ; x-pos
   inc l
-  ld [hl], $1b; tile number
+  ld [hl], d; tile number
+  inc d
 
 .bottom_left
   ld hl, pSHADOW_OAM + $0c
   ld a, b
   adc a, 8
   ld b, a
-  ld [hl], b
+  ld [hl], b ; y-pos
   inc l
-  ld [hl], e
+  ld [hl], e ; x-pos
   inc l
-  ld [hl], $1c; tile number
+  ld [hl], d; tile number
+  inc d
 
 .bottom_right
   ld hl, pSHADOW_OAM + $08
-  ld [hl], b
+  ld [hl], b ; y-pos
   inc l
-  ld [hl], c
+  ld [hl], c ; x-pos
   inc l
-  ld [hl], $1d; tile number
+  ld [hl], d; tile number
 
 .done
   pop hl
