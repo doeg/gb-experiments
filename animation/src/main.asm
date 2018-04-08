@@ -58,6 +58,10 @@ init::
   ld a, %00000001
   ld [pINTERRUPT_ENABLE], a
 
+.set_sprites_enabled
+  ld hl, pLCD_CTRL
+  set 1, [HL]
+
 .clear_hram
   ; Clear HRAM. -2 to save room for the stack,
   ; and because the range is inclusive.
@@ -86,11 +90,11 @@ init::
 
 .set_palettes
   ld hl, pLCD_BG_PAL
-  LD [hl], %00011011
+  LD [hl], %11111100
   ld hl, pOBJ0_PAL
-  ld [hl], %00011011
+  ld [hl], %11100100
   ld hl, pOBJ1_PAL
-  ld [hl], %00011011
+  ld [hl], %11100100
 
 .load_tiles
   ld bc, gengar ; source
