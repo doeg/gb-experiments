@@ -23,10 +23,17 @@ SPRITE_SIZE_BYTES EQU TILE_SIZE_BYTES * 4
 pGENGAR_TILES EQU pVRAM_TILES_SPRITE + $01a0
 
 pGENGAR_X:: ds 1
-pGENGAR_Y:: ds 1
-
 GENGAR_X_DEFAULT EQU $50
+
+pGENGAR_Y:: ds 1
 GENGAR_Y_DEFAULT EQU $46
+
+; 0 - open
+; 1 - closed
+pGENGAR_STATE:: ds 1
+
+pGENGAR_FRAME_COUNTER:: ds 1
+GENGAR_FRAME_RATE EQU 10
 
 SECTION  "Vblank", ROM0[$0040]
   jp pHRAM
@@ -102,11 +109,17 @@ init::
   ld hl, pOBJ1_PAL
   ld [hl], %11100100
 
-.init_variables
+.init_variables::
   ld hl, pGENGAR_X
   ld [hl], GENGAR_X_DEFAULT
   ld hl, pGENGAR_Y
   ld [hl], GENGAR_Y_DEFAULT
+
+  xor a
+  ld [pGENGAR_STATE], a
+
+  ld a, GENGAR_FRAME_RATE
+  ld [pGENGAR_FRAME_COUNTER], a
 
 .load_tiles
   ld bc, gengar ; source
@@ -137,10 +150,19 @@ main_loop::
 
 
 draw_gengar_0::
+  ; a - accumulator
+  ; b - gengar y-pos
+  ; c - gengar x-pos
+  ; e - dunno but it's used
   push af
   push bc
   push de
   push hl
+
+.dec_frame_counter
+  ld hl, pGENGAR_FRAME_COUNTER
+  dec [hl]
+  jr nz, .done
 
 .load_position
   ld hl, pGENGAR_Y
@@ -187,6 +209,7 @@ draw_gengar_0::
   inc l
   ld [hl], $1d; tile number
 
+.done
   pop hl
   pop de
   pop bc

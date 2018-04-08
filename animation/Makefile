@@ -21,7 +21,7 @@ $(ROM_NAME): $(OBJECTS)
 	$(FIX) $(FIX_FLAGS) $@.gb
 
 %.o: %.asm
-	$(ASM) -i$(INCDIR)/ -o $@ $<
+	$(ASM) -v -i$(INCDIR)/ -o $@ $<
 
 clean:
 	rm $(ROM_NAME).gb $(ROM_NAME).sym $(OBJECTS)
