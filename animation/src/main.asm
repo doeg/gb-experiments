@@ -1,5 +1,22 @@
 include "addrs.inc"
 
+SECTION "variables", WRAM0
+
+; Set to 1 whenever the vblank handler occurs.
+; This is so that game logic can take place in the main loop while still
+; retaining a loop rate (or frequency) equal to vblank (60 times/second).
+pVBLANK_FLAG:: ds 1
+
+; Each individual tile is 16 bytes
+TILE_SIZE_BYTES EQU 16
+
+; Each sprite is composed of 4 tiles
+SPRITE_SIZE_BYTES EQU TILE_SIZE_BYTES * 4
+
+; The location of all Gengar tiles in VRAM. This places the sprites
+; after the Nintendo logo.
+pGENGAR_TILES EQU pVRAM_TILES_SPRITE + $01a0
+
 SECTION  "Vblank", ROM0[$0040]
   jp pHRAM
 SECTION  "LCDC", ROM0[$0048]
@@ -17,23 +34,6 @@ SECTION  "start", ROM0[$0100]
   jp init
 
 INCLUDE "header.inc"
-
-SECTION "variables", WRAM0
-
-; Set to 1 whenever the vblank handler occurs.
-; This is so that game logic can take place in the main loop while still
-; retaining a loop rate (or frequency) equal to vblank (60 times/second). 
-pVBLANK_FLAG:: ds 1
-
-; Each individual tile is 16 bytes
-TILE_SIZE_BYTES EQU 16
-
-; Each sprite is composed of 4 tiles
-SPRITE_SIZE_BYTES EQU TILE_SIZE_BYTES * 4
-
-; The location of all Gengar tiles in VRAM. This places the sprites
-; after the Nintendo logo.
-pGENGAR_TILES EQU pVRAM_TILES_SPRITE + $01a0
 
 SECTION "main", ROMX
 init::
