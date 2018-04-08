@@ -103,12 +103,90 @@ main_loop::
   or a
   ; No, some other interrupt
   jr z, main_loop
-  ; Clear the vblank flag
+.clear_vblank_flag
   xor a
   ld [pVBLANK_FLAG], a
-  ; Do stuff here
+.do_stuff
+  call draw_gengar_0
 .continue
   jr main_loop
+
+
+draw_gengar_0::
+  push af
+  push bc
+  push de
+  push hl
+
+.load_position
+  ld b, 16
+  ld c, 8
+
+.top_left
+  ld hl, pSHADOW_OAM
+  ld [hl], b
+  inc l
+  ld [hl], c
+  inc l
+  ld [hl], $1a; tile number
+  inc l
+  set 4, [hl]
+  res 5, [hl]
+  res 6, [hl]
+  res 7, [hl]
+
+.top_right
+  ld hl, pSHADOW_OAM + $04
+  ld e, c
+  ld a, c
+  adc a, 8
+  ld c, a
+  ld [hl], b
+  inc l
+  ld [hl], c
+  inc l
+  ld [hl], $1b; tile number
+  inc l
+  set 4, [hl]
+  res 5, [hl]
+  res 6, [hl]
+  res 7, [hl]
+
+.bottom_left
+  ld hl, pSHADOW_OAM + $0c
+  ld a, b
+  adc a, 8
+  ld b, a
+  ld [hl], b
+  inc l
+  ld [hl], e
+  inc l
+  ld [hl], $1c; tile number
+  inc l
+  set 4, [hl]
+  res 5, [hl]
+  res 6, [hl]
+  res 7, [hl]
+
+.bottom_right
+  ld hl, pSHADOW_OAM + $08
+  ld [hl], b
+  inc l
+  ld [hl], c
+  inc l
+  ld [hl], $1d; tile number
+  inc l
+  set 4, [hl]
+  res 5, [hl]
+  res 6, [hl]
+  res 7, [hl]
+
+  pop hl
+  pop de
+  pop bc
+  pop af
+  ret
+
 
 ; V-blank interrupt handler code. This is not jumped to directly.
 ; Rather, it is copied to HRAM by the `.init_dma` block. Sets
