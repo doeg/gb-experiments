@@ -137,11 +137,6 @@ draw_gengar_0::
   ld [hl], c
   inc l
   ld [hl], $1a; tile number
-  inc l
-  set 4, [hl]
-  res 5, [hl]
-  res 6, [hl]
-  res 7, [hl]
 
 .top_right
   ld hl, pSHADOW_OAM + $04
@@ -154,11 +149,6 @@ draw_gengar_0::
   ld [hl], c
   inc l
   ld [hl], $1b; tile number
-  inc l
-  set 4, [hl]
-  res 5, [hl]
-  res 6, [hl]
-  res 7, [hl]
 
 .bottom_left
   ld hl, pSHADOW_OAM + $0c
@@ -170,11 +160,6 @@ draw_gengar_0::
   ld [hl], e
   inc l
   ld [hl], $1c; tile number
-  inc l
-  set 4, [hl]
-  res 5, [hl]
-  res 6, [hl]
-  res 7, [hl]
 
 .bottom_right
   ld hl, pSHADOW_OAM + $08
@@ -183,11 +168,6 @@ draw_gengar_0::
   ld [hl], c
   inc l
   ld [hl], $1d; tile number
-  inc l
-  set 4, [hl]
-  res 5, [hl]
-  res 6, [hl]
-  res 7, [hl]
 
   pop hl
   pop de
