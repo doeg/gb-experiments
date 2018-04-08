@@ -22,6 +22,12 @@ SPRITE_SIZE_BYTES EQU TILE_SIZE_BYTES * 4
 ; after the Nintendo logo.
 pGENGAR_TILES EQU pVRAM_TILES_SPRITE + $01a0
 
+pGENGAR_X:: ds 1
+pGENGAR_Y:: ds 1
+
+GENGAR_X_DEFAULT EQU $08
+GENGAR_Y_DEFAULT EQU $10
+
 SECTION  "Vblank", ROM0[$0040]
   jp pHRAM
 SECTION  "LCDC", ROM0[$0048]
@@ -96,6 +102,12 @@ init::
   ld hl, pOBJ1_PAL
   ld [hl], %11100100
 
+.init_variables
+  ld hl, pGENGAR_X
+  ld [hl], GENGAR_X_DEFAULT
+  ld hl, pGENGAR_Y
+  ld [hl], GENGAR_Y_DEFAULT
+
 .load_tiles
   ld bc, gengar ; source
   ld hl, pGENGAR_TILES  ; dest
@@ -131,8 +143,10 @@ draw_gengar_0::
   push hl
 
 .load_position
-  ld b, 16
-  ld c, 8
+  ld hl, pGENGAR_Y
+  ld b, [hl]
+  ld hl, pGENGAR_X
+  ld c, [hl]
 
 .top_left
   ld hl, pSHADOW_OAM
