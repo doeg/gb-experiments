@@ -168,11 +168,21 @@ draw_gengar_0::
   ld a, GENGAR_FRAME_RATE
   ld [pGENGAR_FRAME_COUNTER], a
 
-.load_current_frame
+.load_first_tile
   ld d, $1a
+
+.load_current_frame
   ld a, [pGENGAR_CURRENT_FRAME]
-  add a, d
-  ld d, a
+  ; If current frame is 0, we are done and can jump to animation
+  cp a, $00
+  jr z, .update_frame
+
+.set_current_tile
+  ld d, $1e
+
+  ; If current frame is 1, we need to add 4 to d (tile idx)
+  ; Then we need to update pGENGAR_CURRENT_FRAME in memory to the next frame
+.update_frame
   ld a, [pGENGAR_CURRENT_FRAME]
   cpl
   ld [pGENGAR_CURRENT_FRAME], a
