@@ -1,5 +1,10 @@
 include "addrs.inc"
 
+; Shadow OAM. Needs to be 16-byte aligned. The last two hex digits of the
+; address are assumed to be 00 during DMA transfer (through use of `ldh`).
+SECTION "shadow_oam", WRAM0, ALIGN[2]
+pSHADOW_OAM:: ds 40 * 4 ; $c000
+
 SECTION "variables", WRAM0
 
 ; Set to 1 whenever the vblank handler occurs.
@@ -53,8 +58,19 @@ init::
   ld a, %00000001
   ld [pINTERRUPT_ENABLE], a
 
+.clear_oam::
+  xor a
+  ld hl, $FE00 ; start of OAM
+  ld bc, $A0 ; the full size of the OAM area: 40 bytes, 4 bytes per sprite
+  call mem_set
+
+  xor a
+  ld hl, pSHADOW_OAM
+  ld bc, $9f
+  call mem_set
+
 ; Copies the DMA handler code to HRAM
-.init_dma::
+.init_dma
   ld de, on_vblank_end - on_vblank + 1
   ld bc, on_vblank
   ld hl, pHRAM
@@ -129,6 +145,28 @@ memcpy::
   cp $00
   jr nz, .memcpy_loop
   ret
+
+; Set a memory region to a value.
+; From GBHW.INC - Gameboy Hardware definitions for GALP.
+;
+; a - value
+; hl - pMem
+; bc - bytecount
+;
+mem_set::
+  push bc
+  push hl
+	inc	b
+	inc	c
+	jr	.skip
+.loop	ld	[hl+],a
+.skip	dec	c
+	jr	nz,.loop
+	dec	b
+	jr	nz,.loop
+  pop hl
+  pop bc
+	ret
 
 gengar::
   ; Frame 0

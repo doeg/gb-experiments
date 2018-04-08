@@ -28,8 +28,8 @@ pVRAM_TILES_BACKGROUND   EQU $9000
 pVRAM_MAP_CHR            EQU $9800
 pVRAM_MAP_BG             EQU $9c00
 
-pSHADOW_OAM              EQU $c000
-pSHADOW_OAM_END          EQU $c09f
+; pSHADOW_OAM              EQU $c000
+; pSHADOW_OAM_END          EQU $c09f
 
 ; OAM (object attribute memory, a.k.a. the sprite
 ; attribute table). This is mirrored by the range
