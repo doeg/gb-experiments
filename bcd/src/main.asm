@@ -1,3 +1,5 @@
+include "memory.inc"
+
 SECTION  "Vblank", ROM0[$0040]
   jp on_vblank
 SECTION  "LCDC", ROM0[$0048]
@@ -136,28 +138,8 @@ inc_counter::
   pop af
   ret
 
-; de - block size
-; bc - source address
-; hl - destination address
-memcpy::
-  dec de
-.memcpy_loop:
-  ld a, [bc]
-  ld [hl], a
-  inc bc
-  inc hl
-  dec de
-.memcpy_check_limit:
-  ld a, e
-  cp $00
-  jr nz, .memcpy_loop
-  ld a, d
-  cp $00
-  jr nz, .memcpy_loop
-  ret
-
 ; V-blank interrupt handler. Draws the digits of the counter's current value
-; to the screen (as background tiles). 
+; to the screen (as background tiles).
 on_vblank::
   push af
   push bc
