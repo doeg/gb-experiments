@@ -1,3 +1,5 @@
+SECTION "memory", ROMX
+
 ; de - block size
 ; bc - source address
 ; hl - destination address
