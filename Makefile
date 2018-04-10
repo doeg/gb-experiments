@@ -1,4 +1,9 @@
-ROOT_DIR=$(abspath .)
+.PHONY: \
+	all \
+	animation \
+	bcd \
+	clean \
+	template
 
 all : animation bcd template
 
