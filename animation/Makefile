@@ -24,4 +24,4 @@ $(ROM_NAME): $(OBJECTS)
 	$(ASM) -v -i$(INCDIR)/ -i"../lib/" -o $@ $<
 
 clean:
-	rm $(ROM_NAME).gb $(ROM_NAME).sym $(OBJECTS)
+	rm -f *.gb *.sym $(OBJECTS)
